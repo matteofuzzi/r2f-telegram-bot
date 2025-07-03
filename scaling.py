@@ -1,0 +1,33 @@
+# scaling.py
+
+scaling_movements = {
+    "C2B": "C2B: Pull-ups > Banded Strict Pull-up (Use a band that allows +/- 5 Reps UB)",
+    "RMU": "RMU: Low Ring Banded Muscle-Up + Strict/Jump Dip (Use a band that allows +/- 5 Reps UB)",
+    "Strict HSPU": "Strict HSPU: Elevated Strict HSPU (Use a riser that allows +/- 5 Reps UB) > Box Pike Push-ups",
+    "C2W HSPU": "C2W HSPU: Elevated C2W HSPU (Use a riser that allows +/- 5 Reps UB) > Box Pike Push-ups",
+    "TTB": "TTB: Knee to Chest & Kick > One Leg TTB > Knee to Chests > Supinated TTB",
+    "TTR": "TTR: Knee to Chest & Kick > One Leg TTR > Knee to Chests",
+    "Pistols": "Pistols: Assisted Pistols > Skater Squats > Reverse Lunges",
+    "BMU": "BMU: Banded BMU (Use a band that allows +/- 5 Reps UB) > Strict C2B > Strict Pull-ups",
+    "Wall Walk": "Wall Walk: Half Wall Walks > Box Walk",
+    "WW+C2W": "WW+C2W: Box Walk + Box Pike Push-ups",
+    "HSW": "HSW: 30\" Walk to Wall Drill > 10 Wall Facing Plate Shoulder Taps > 2 Wall Walk",
+    "Pull-ups": "Pull-ups: Banded Strict Pull-up (Use a band that allows +/- 5 Reps UB)",
+    "Strict Pull-ups": "Strict Pull-ups: Banded Strict Pull-up (Use a band that allows +/- 5 Reps UB)",
+    "Push-ups": "Push-ups: Knee Push-ups > Box Push-ups",
+    "Ring Dips": "Ring Dips: Banded Ring Dips (Use a band that allows +/- 5 Reps UB)",
+    "Freestanding HSPU": "Freestanding HSPU: Freestanding Negative HSPU",
+    "Freestanding Handstand Hold": "Freestanding Handstand Hold: Single Leg Lift > Chest to Box > Stacked Plates",
+    "GHD Sit-ups": "GHD Sit-ups: GHD to Parallel > AB Mat Sit-ups",
+    "V-ups Sit-ups": "V-ups Sit-ups: Tuck-ups",
+    "Rope Climb Legless": "Rope Climb Legless: 1 Half Rope Climb Legless > 1 Rope Climb > 1 Half Rope Climb > 2 Laying to Stand Rope Climbs",
+    "Rope Climb": "Rope Climb: 1 Half Rope Climb > 2 Laying to Stand Rope Climbs",
+    "Pegboard": "Pegboard: Half Pegboard",
+    "DU": "DU: Same Number Single Unders",
+    "SUCO": "SUCO: Double Unders > Single Unders",
+    "DUCO": "DUCO: 2x SUCO > 1x Double Unders > 2x Single Unders",
+    "Heavy Rope DU": "Heavy Rope DU: Heavy Rope SU",
+    "Heavy Rope DU Combo": "Heavy Rope DU: DU > Heavy Rope SU > SU (Same numbers)",
+    "BBGO @120/100cm": "BBGO @120/100cm: BBJO 75/60cm > BBJO 60/50cm",
+    "Pull-Overs": "Pull-Overs: Box Pullovers https://www.youtube.com/watch?v=Iv42BIhwnvY"
+}
