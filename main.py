@@ -1,17 +1,19 @@
 from flask import Flask, request
 import requests
-import openai
 import os
+from openai import OpenAI
 
-app = Flask(__name__)
-
+# CONFIG
 BOT_TOKEN = '7952515157:AAGrKDHNW5USeWVV4WoR5C7u7BX9LVxkOgk'
 BOT_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-openai.api_key = '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'
+OPENAI_API_KEY = "sk-proj-..."  # <-- sostituisci con la tua API Key o usa variabili d’ambiente
+
+app = Flask(__name__)
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 @app.route('/')
 def home():
-    return 'R2F Bot with AI is live!'
+    return 'R2F Bot is live!'
 
 @app.route(f'/{BOT_TOKEN}', methods=['POST'])
 def webhook():
@@ -19,9 +21,9 @@ def webhook():
 
     if 'message' in data:
         chat_id = data['message']['chat']['id']
-        text = data['message'].get('text', '').strip()
+        text = data['message'].get('text', '')
 
-        if text.startswith("/tool"):
+        if text == "/tool":
             reply = (
                 "Scrivimi qui sotto la tua domanda sulla programmazione R2F.\n\n"
                 "Puoi chiedere qualsiasi cosa su:\n"
@@ -36,11 +38,11 @@ def webhook():
             prompt = (
                 f"Rispondi come se fossi il coach della programmazione R2F, "
                 f"basandoti sullo storico CrossFit, le regole R2F su scaling, TxR, pacing e stimolo. "
-                f"Domanda dell'utente: {text}"
+                f"Domanda dell’utente: {text}"
             )
 
             try:
-                completion = openai.ChatCompletion.create(
+                response = client.chat.completions.create(
                     model="gpt-4",
                     messages=[
                         {"role": "system", "content": "Sei il coach della programmazione R2F. Rispondi con competenza tecnica e tono autorevole ma amichevole."},
@@ -49,10 +51,12 @@ def webhook():
                     temperature=0.6,
                     max_tokens=500
                 )
-                reply = completion.choices[0].message.content
+                reply = response.choices[0].message.content
+
             except Exception as e:
                 reply = f"❌ Errore nella risposta AI: {str(e)}"
 
+        # Invia la risposta su Telegram
         requests.post(BOT_URL, json={
             'chat_id': chat_id,
             'text': reply
