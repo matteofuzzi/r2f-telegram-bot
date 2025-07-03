@@ -2,6 +2,7 @@ from flask import Flask, request
 import requests
 import os
 import openai
+import re
 from scaling import scaling_movements
 from movement_times import movement_times
 from weights_scaling import weights_scaling
@@ -14,6 +15,29 @@ OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 app = Flask(__name__)
 openai.api_key = OPENAI_API_KEY
+
+def calculate_txr(text):
+    pattern = r"(\d+)\s+([a-zA-Z\-+&/() ]+)"
+    matches = re.findall(pattern, text)
+    total_seconds = 0.0
+    dettagli = []
+
+    for qty, movement in matches:
+        movement_clean = movement.strip().upper().replace("  ", " ")
+        reps = int(qty)
+        for key in movement_times:
+            if key.upper() in movement_clean:
+                seconds = reps * movement_times[key]
+                total_seconds += seconds
+                dettagli.append(f"{reps} {key} × {movement_times[key]}\" = {round(seconds)}\"")
+                break
+
+    minuti = int(total_seconds // 60)
+    secondi = int(total_seconds % 60)
+    time_str = f"{minuti}:{secondi:02d}"
+
+    dettagli_txt = "\n".join(dettagli)
+    return f"[TxR ESTIMATO]\n\n{dettagli_txt}\n\n→ Totale stimato: ~{time_str}"
 
 @app.route('/')
 def home():
