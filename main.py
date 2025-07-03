@@ -3,6 +3,9 @@ import requests
 import os
 import openai
 from scaling import scaling_movements
+from movement_times import movement_times
+from weights_scaling import weights_scaling
+from cardio_conversion import cardio_conversion, meters_equivalent
 
 # CONFIG
 BOT_TOKEN = '7952515157:AAGrKDHNW5USeWVV4WoR5C7u7BX9LVxkOgk'
