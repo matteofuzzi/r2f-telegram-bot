@@ -1,15 +1,15 @@
 from flask import Flask, request
 import requests
 import os
-from openai import OpenAI
+import openai
 
 # CONFIG
 BOT_TOKEN = '7952515157:AAGrKDHNW5USeWVV4WoR5C7u7BX9LVxkOgk'
 BOT_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-OPENAI_API_KEY = "sk-proj-..."  # <-- sostituisci con la tua API Key o usa variabili d’ambiente
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 app = Flask(__name__)
-client = OpenAI(api_key=OPENAI_API_KEY)
+openai.api_key = OPENAI_API_KEY
 
 @app.route('/')
 def home():
@@ -42,7 +42,7 @@ def webhook():
             )
 
             try:
-                response = client.chat.completions.create(
+                response = openai.chat.completions.create(
                     model="gpt-4",
                     messages=[
                         {"role": "system", "content": "Sei il coach della programmazione R2F. Rispondi con competenza tecnica e tono autorevole ma amichevole."},
