@@ -1,6 +1,8 @@
 # scaling.py
+
 def get_scaling_for_movement(query):
     query = query.lower().strip()
+    
     scaling_dict = {
         "hspu": "HSPU: Elevated HSPU (Use a riser that allows +/- 5 Reps UB) > Box Pike Push-ups",
         "strict hspu": "Strict HSPU: Elevated Strict HSPU (Use a riser that allows +/- 5 Reps UB) > Box Pike Push-ups",
@@ -31,10 +33,11 @@ def get_scaling_for_movement(query):
         "du": "DU: Same Number Single Unders",
         "suco": "SUCO: Double Unders > Single Unders",
         "duco": "DUCO > 2x SUCO > 1x Double Unders > 2x Single Unders",
-        "heavy rope du": "Heavy Rope DU  > DU > Heavy Rope SU > SU (Same numbers)"
+        "heavy rope du": "Heavy Rope DU > DU > Heavy Rope SU > SU (Same numbers)"
     }
 
     for key in scaling_dict:
         if key in query:
             return scaling_dict[key]
+
     return None
