@@ -1,43 +1,16 @@
 from flask import Flask, request
 import requests
-import os
 import openai
-import re
+import os
 from scaling import scaling_movements
-from movement_times import movement_times
-from weights_scaling import weights_scaling
-from cardio_conversion import cardio_conversion, meters_equivalent
-
-# CONFIG
-BOT_TOKEN = '7952515157:AAGrKDHNW5USeWVV4WoR5C7u7BX9LVxkOgk'
-BOT_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+from txr import calculate_virtual_time
 
 app = Flask(__name__)
+
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
+BOT_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 openai.api_key = OPENAI_API_KEY
-
-def calculate_txr(text):
-    pattern = r"(\d+)\s+([a-zA-Z\-+&/() ]+)"
-    matches = re.findall(pattern, text)
-    total_seconds = 0.0
-    dettagli = []
-
-    for qty, movement in matches:
-        movement_clean = movement.strip().upper().replace("  ", " ")
-        reps = int(qty)
-        for key in movement_times:
-            if key.upper() in movement_clean:
-                seconds = reps * movement_times[key]
-                total_seconds += seconds
-                dettagli.append(f"{reps} {key} × {movement_times[key]}\" = {round(seconds)}\"")
-                break
-
-    minuti = int(total_seconds // 60)
-    secondi = int(total_seconds % 60)
-    time_str = f"{minuti}:{secondi:02d}"
-
-    dettagli_txt = "\n".join(dettagli)
-    return f"[TxR ESTIMATO]\n\n{dettagli_txt}\n\n→ Totale stimato: ~{time_str}"
 
 @app.route('/')
 def home():
@@ -49,10 +22,9 @@ def webhook():
 
     if 'message' in data:
         chat_id = data['message']['chat']['id']
-        text = data['message'].get('text', '')
-        lower_text = text.lower()
-        reply = None
+        text = data['message'].get('text', '').strip()
 
+        # Comando /tool
         if text == "/tool":
             reply = (
                 "Scrivimi qui sotto la tua domanda sulla programmazione R2F.\n\n"
@@ -62,4 +34,46 @@ def webhook():
                 "• Tempi target e TxR\n"
                 "• Significato di esercizi o sigle\n"
                 "• Consigli tecnici e tool\n\n"
-                "Ti risponderò direttamente io 
+                "Ti risponderò direttamente io 🤖"
+            )
+
+        # Comando /txr
+        elif text.lower().startswith("/txr"):
+            wod_text = text[4:].strip()
+            reply = calculate_virtual_time(wod_text)
+
+        # Scaling esercizi (match esatto da dizionario)
+        elif text.upper() in scaling_movements:
+            reply = scaling_movements[text.upper()]
+
+        else:
+            # Risposta GPT-4
+            prompt = (
+                f"Rispondi come se fossi il coach della programmazione R2F, "
+                f"basandoti sullo storico CrossFit, le regole R2F su scaling, TxR, pacing e stimolo. "
+                f"Domanda dell'utente: {text}"
+            )
+
+            try:
+                completion = openai.ChatCompletion.create(
+                    model="gpt-4",
+                    messages=[
+                        {"role": "system", "content": "Sei il coach della programmazione R2F. Rispondi con competenza tecnica e tono autorevole ma amichevole."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.6,
+                    max_tokens=500
+                )
+                reply = completion.choices[0].message.content
+            except Exception as e:
+                reply = f"❌ Errore nella risposta AI: {str(e)}"
+
+        requests.post(BOT_URL, json={
+            'chat_id': chat_id,
+            'text': reply
+        })
+
+    return '', 200
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
