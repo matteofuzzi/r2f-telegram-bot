@@ -42,31 +42,32 @@ def webhook():
             wod_text = text[4:].strip()
             reply = calculate_virtual_time(wod_text)
 
-        # Scaling esercizi (match esatto da dizionario)
-        elif text.upper() in scaling_movements:
-            reply = scaling_movements[text.upper()]
-
+        # Scaling esercizi (fuzzy match)
         else:
-            # Risposta GPT-4
-            prompt = (
-                f"Rispondi come se fossi il coach della programmazione R2F, "
-                f"basandoti sullo storico CrossFit, le regole R2F su scaling, TxR, pacing e stimolo. "
-                f"Domanda dell'utente: {text}"
-            )
-
-            try:
-                completion = openai.ChatCompletion.create(
-                    model="gpt-4",
-                    messages=[
-                        {"role": "system", "content": "Sei il coach della programmazione R2F. Rispondi con competenza tecnica e tono autorevole ma amichevole."},
-                        {"role": "user", "content": prompt}
-                    ],
-                    temperature=0.6,
-                    max_tokens=500
+            matched_key = next((key for key in scaling_movements if key in text.upper()), None)
+            if matched_key:
+                reply = scaling_movements[matched_key]
+            else:
+                # Risposta GPT-4
+                prompt = (
+                    f"Rispondi come se fossi il coach della programmazione R2F, "
+                    f"basandoti sullo storico CrossFit, le regole R2F su scaling, TxR, pacing e stimolo. "
+                    f"Domanda dell'utente: {text}"
                 )
-                reply = completion.choices[0].message.content
-            except Exception as e:
-                reply = f"❌ Errore nella risposta AI: {str(e)}"
+
+                try:
+                    completion = openai.ChatCompletion.create(
+                        model="gpt-4",
+                        messages=[
+                            {"role": "system", "content": "Sei il coach della programmazione R2F. Rispondi con competenza tecnica e tono autorevole ma amichevole."},
+                            {"role": "user", "content": prompt}
+                        ],
+                        temperature=0.6,
+                        max_tokens=500
+                    )
+                    reply = completion.choices[0].message.content
+                except Exception as e:
+                    reply = f"❌ Errore nella risposta AI: {str(e)}"
 
         requests.post(BOT_URL, json={
             'chat_id': chat_id,
